@@ -13,6 +13,7 @@ import android.support.v7.graphics.Palette;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.Scene;
+import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.view.View;
@@ -21,6 +22,9 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.teamtreehouse.albumcover.transition.Fold;
+import com.teamtreehouse.albumcover.transition.Scale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,51 +55,79 @@ public class AlbumDetailActivity extends Activity {
         setupTransitions();
     }
 
-    private void animate() {
+    private Transition createTransition() {
+        TransitionSet transitionSet = new TransitionSet();
+        transitionSet.setOrdering(TransitionSet.ORDERING_SEQUENTIAL);
+
+        Transition transitionFab = new Scale();
+        transitionFab.setDuration(150);
+        transitionFab.addTarget(fab);
+
+        Transition transitionTitle = new Fold();
+        transitionTitle.setDuration(150);
+        transitionTitle.addTarget(titlePanel);
+
+        Transition transitionTrack = new Fold();
+        transitionTrack.setDuration(150);
+        transitionTrack.addTarget(trackPanel);
+
+        transitionSet.addTransition(transitionTitle);
+        transitionSet.addTransition(transitionTrack);
+        transitionSet.addTransition(transitionFab);
+
+        return transitionSet;
+    }
+
+//    private void animate() {
+////        fab.setScaleX(0);
+////        fab.setScaleY(0);
+////        fab.animate().scaleX(1).scaleY(1).start();
+//
+//        // Java code 方式
+////        ObjectAnimator scaleX = ObjectAnimator.ofFloat(fab, "scaleX", 0, 1);
+////        ObjectAnimator scaleY = ObjectAnimator.ofFloat(fab, "scaleY", 0, 1);
+////        AnimatorSet scaleFab = new AnimatorSet();
+////        scaleFab.playTogether(scaleX, scaleY);
+//
+//        // 利用 xml 檔案方式
+//        Animator scaleFab = AnimatorInflater.loadAnimator(this, R.animator.scale);
+//        scaleFab.setTarget(fab);
+//
+//        int titleStartValue = titlePanel.getTop();
+//        int titleEndValue = titlePanel.getBottom();
+//        ObjectAnimator animatorTitle = ObjectAnimator.ofInt(titlePanel, "bottom", titleStartValue, titleEndValue);
+//        animatorTitle.setInterpolator(new AccelerateInterpolator());
+//
+//        int trackStartValue = trackPanel.getTop();
+//        int trackEndValue = trackPanel.getBottom();
+//        ObjectAnimator animatorTrack = ObjectAnimator.ofInt(trackPanel, "bottom", trackStartValue, trackEndValue);
+//        animatorTrack.setInterpolator(new DecelerateInterpolator());
+//
+//        // 先隱藏
+//        titlePanel.setBottom(titleStartValue);
+//        trackPanel.setBottom(titleStartValue);
 //        fab.setScaleX(0);
 //        fab.setScaleY(0);
-//        fab.animate().scaleX(1).scaleY(1).start();
-
-        // Java code 方式
-//        ObjectAnimator scaleX = ObjectAnimator.ofFloat(fab, "scaleX", 0, 1);
-//        ObjectAnimator scaleY = ObjectAnimator.ofFloat(fab, "scaleY", 0, 1);
-//        AnimatorSet scaleFab = new AnimatorSet();
-//        scaleFab.playTogether(scaleX, scaleY);
-
-        // 利用 xml 檔案方式
-        Animator scaleFab = AnimatorInflater.loadAnimator(this, R.animator.scale);
-        scaleFab.setTarget(fab);
-
-        int titleStartValue = titlePanel.getTop();
-        int titleEndValue = titlePanel.getBottom();
-        ObjectAnimator animatorTitle = ObjectAnimator.ofInt(titlePanel, "bottom", titleStartValue, titleEndValue);
-        animatorTitle.setInterpolator(new AccelerateInterpolator());
-
-        int trackStartValue = trackPanel.getTop();
-        int trackEndValue = trackPanel.getBottom();
-        ObjectAnimator animatorTrack = ObjectAnimator.ofInt(trackPanel, "bottom", trackStartValue, trackEndValue);
-        animatorTrack.setInterpolator(new DecelerateInterpolator());
-
-        // 先隱藏
-        titlePanel.setBottom(titleStartValue);
-        trackPanel.setBottom(titleStartValue);
-        fab.setScaleX(0);
-        fab.setScaleY(0);
-
-        // 動畫時間，毫秒
-//        animatorTitle.setDuration(1000);
-//        animatorTrack.setDuration(1000);
-//        animatorTitle.setStartDelay(1000);
-
-        // 動畫順序
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playSequentially(animatorTitle, animatorTrack, scaleFab);
-        animatorSet.start();
-    }
+//
+//        // 動畫時間，毫秒
+////        animatorTitle.setDuration(1000);
+////        animatorTrack.setDuration(1000);
+////        animatorTitle.setStartDelay(1000);
+//
+//        // 動畫順序
+//        AnimatorSet animatorSet = new AnimatorSet();
+//        animatorSet.playSequentially(animatorTitle, animatorTrack, scaleFab);
+//        animatorSet.start();
+//    }
 
     @OnClick(R.id.album_art)
     public void onAlbumArtClick(View view) {
-        animate();
+//        animate();
+        Transition transition = createTransition();
+        TransitionManager.beginDelayedTransition(detailContainer, transition);
+        fab.setVisibility(View.INVISIBLE);
+        titlePanel.setVisibility(View.INVISIBLE);
+        trackPanel.setVisibility(View.INVISIBLE);
     }
 
     @OnClick(R.id.track_panel)
