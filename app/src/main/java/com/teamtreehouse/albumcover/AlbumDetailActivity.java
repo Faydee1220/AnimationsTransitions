@@ -5,13 +5,16 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.graphics.Palette;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.Scene;
+import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -136,6 +139,17 @@ public class AlbumDetailActivity extends Activity {
     }
 
     private void setupTransitions() {
+        // 進入時從右方滑入
+//        getWindow().setEnterTransition(new Slide(Gravity.RIGHT));
+//
+//        // 返回時淡出
+//        getWindow().setReturnTransition(new Fade());
+
+        Slide slide = new Slide(Gravity.BOTTOM);
+        slide.excludeTarget(android.R.id.statusBarBackground, true); // 避免狀態列跳動
+        getWindow().setEnterTransition(slide);
+        getWindow().setSharedElementsUseOverlay(false); // 避免浮動按鈕被蓋住
+
         transitionManager = new TransitionManager();
         ViewGroup transitionRoot = detailContainer;
 
@@ -203,9 +217,27 @@ public class AlbumDetailActivity extends Activity {
 
         // 起始畫面（尚未有任何動畫前）要記得呼叫 enter()，
         collapsedScene.enter();
+
+        // 遞延動畫
+//        postponeEnterTransition();
     }
 
     private void populate() {
+        // 模擬從網路下載大圖需要時間的延遲狀況
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                int albumArtResId = getIntent().getIntExtra(EXTRA_ALBUM_ART_RESID, R.drawable.mean_something_kinder_than_wolves);
+//                albumArtView.setImageResource(albumArtResId);
+//
+//                Bitmap albumBitmap = getReducedBitmap(albumArtResId);
+//                colorizeFromImage(albumBitmap);
+//
+//                // 開始被遞延的動畫
+//                startPostponedEnterTransition();
+//            }
+//        }, 1000);
+
         int albumArtResId = getIntent().getIntExtra(EXTRA_ALBUM_ART_RESID, R.drawable.mean_something_kinder_than_wolves);
         albumArtView.setImageResource(albumArtResId);
 
