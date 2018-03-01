@@ -1,5 +1,6 @@
 package com.teamtreehouse.albumcover;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -21,7 +22,7 @@ public class AlbumDetailActivity extends Activity {
     public static final String EXTRA_ALBUM_ART_RESID = "EXTRA_ALBUM_ART_RESID";
 
     @BindView(R.id.album_art) ImageView albumArtView;
-    @BindView(R.id.fab) ImageButton fab;
+    @BindView(R.id.fab) ImageButton fab; // fab 代表 Floating Action Button，右下方浮在畫面上的圓形按鈕
     @BindView(R.id.title_panel) ViewGroup titlePanel;
     @BindView(R.id.track_panel) ViewGroup trackPanel;
     @BindView(R.id.detail_container) ViewGroup detailContainer;
@@ -34,9 +35,23 @@ public class AlbumDetailActivity extends Activity {
         populate();
     }
 
+    private void animate() {
+        fab.setScaleX(0);
+        fab.setScaleY(0);
+        fab.animate().scaleX(1).scaleY(1).start();
+
+        int titleStartValue = titlePanel.getTop();
+        int titleEndValue = titlePanel.getBottom();
+        ObjectAnimator.ofInt(titlePanel, "bottom", titleStartValue, titleEndValue).start();
+
+        int trackStartValue = trackPanel.getTop();
+        int trackEndValue = trackPanel.getBottom();
+        ObjectAnimator.ofInt(trackPanel, "bottom", trackStartValue, trackEndValue).start();
+    }
+
     @OnClick(R.id.album_art)
     public void onAlbumArtClick(View view) {
-
+        animate();
     }
 
     private void populate() {
